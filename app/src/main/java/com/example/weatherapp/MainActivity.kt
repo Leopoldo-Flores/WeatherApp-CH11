@@ -49,8 +49,10 @@ fun WeatherScreen() {  // a value Compose watches changes for
     var cityResult by remember { mutableStateOf("City: --") }
     var tempResult by remember { mutableStateOf("Temperature: --") }
     var descResult by remember { mutableStateOf("Description: --") }
+    // Three state variables so each Text below can recompose independently
 
-    val context = LocalContext.current
+    val context = LocalContext.current // Toast.makeText() requires an Android Context -- a composable isn't an Activity,
+    // so we pull one from LocalContext instead
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         TextField(
@@ -61,7 +63,7 @@ fun WeatherScreen() {  // a value Compose watches changes for
         )
         Button(
             onClick = {
-                val trimmedCity = city.trim()
+                val trimmedCity = city.trim() // trim() removes accidental leading/trailing spaces before validating
                 if (trimmedCity.isEmpty()) {
                     Toast.makeText(context, "Please enter a city name", Toast.LENGTH_SHORT).show()
                 } else {

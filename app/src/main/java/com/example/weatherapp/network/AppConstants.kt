@@ -11,7 +11,7 @@ object AppConstants{
     const val WEATHER_BASE_URL = "https://api.openweathermap.org/"
 
     // MY API KEY -
-    const val API_KEY = "your api key goes here"
+    const val API_KEY = "e275afad81908887d9b24b05ab98fe6f"
 
     // UNITS
     const val UNITS = "imperial"

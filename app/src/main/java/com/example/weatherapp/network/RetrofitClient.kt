@@ -19,4 +19,21 @@ object RetrofitClient {
             // tells retrofit which interface to implement
 
     }
+
+    val feedbackApiService: FeedbackApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(AppConstants.FEEDBACK_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(FeedbackApiService::class.java)
+    }
+
 }
+
+
+
+
+
+
+
+

@@ -203,6 +203,21 @@ fun WeatherScreen() {  // a value Compose watches changes for
                             val response = withContext(Dispatchers.IO) {
                                 RetrofitClient.feedbackApiService.submitFeedback(request)
                             }
+                            if (response.isSuccessful) {
+
+                                feedbackResult = "Feedback submitted successfully!"
+
+                                comment = ""
+
+                                // Reassigning state clears what the TextField displays
+                                rating = 3
+
+                                // Resets the Slider back to its default middle position
+                            } else {
+
+                                feedbackResult = "Failed to submit feedback. Try again."
+
+                            }
                             // ASSIGNMENT 3
                             // 1. If response.isSuccessful: set feedbackResult to a success message,
                             //    then clear the comment field and reset rating back to 3

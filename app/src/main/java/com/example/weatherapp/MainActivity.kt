@@ -31,14 +31,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 // Class 2
 import android.util.Log
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AssistChip
 // Class 3
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Slider
 import com.example.weatherapp.data.FeedbackRequest
+// Class 4
+import androidx.compose.material3.OutlinedButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        RetrofitClient.init(this)
         setContent {
             MaterialTheme {
                 WeatherScreen()
@@ -63,6 +70,8 @@ fun WeatherScreen() {  // a value Compose watches changes for
     var comment by remember { mutableStateOf("") }
     var feedbackResult by remember { mutableStateOf("") }
 
+    var recentSearches by remember { mutableStateOf(listOf<String>()) }
+
     val scope = rememberCoroutineScope()
     // Three state variables so each Text below can recompose independently
 
@@ -86,6 +95,16 @@ fun WeatherScreen() {  // a value Compose watches changes for
                     Toast.makeText(context, "Please enter a city name", Toast.LENGTH_SHORT).show()
                 } else {
                     isLoading = true
+
+                    // Assignment 4
+                    // 1. Declare "var feedbackLoading by remember { mutableStateOf(false) }"
+                    //    near the top of WeatherScreen(), next to the other state variables
+                    // 2. Set feedbackLoading = true right before the feedback scope.launch { }
+                    // 3. Set feedbackLoading = false inside a finally { } wrapped around the
+                    //    feedback try/catch -- same shape as Get Weather's finally block
+                    // 4. On the Submit Feedback Button: add enabled = !feedbackLoading,
+                    //    and swap its Text to "Submitting..." while feedbackLoading is true
+
                     scope.launch {
                         try {
                             val response = withContext(Dispatchers.IO) {
@@ -111,6 +130,8 @@ fun WeatherScreen() {  // a value Compose watches changes for
                                     humidityResult = "Humidity: ${weather.main.humidity}%"
 
                                     currentCity = trimmedCity // remember this city so feedback can POST
+
+                                    recentSearches = (listOf(weather.name) + recentSearches.filter { it != weather.name}).take(5)
 
                                     // weather.main.humidity is an Int (0-100) -- % appended as a plain string
                                 }
@@ -166,6 +187,30 @@ fun WeatherScreen() {  // a value Compose watches changes for
         Text(descResult, fontSize = 18.sp, modifier = Modifier.padding(top = 8.dp))
         Text(windResult, fontSize = 18.sp, modifier = Modifier.padding(top = 8.dp))
         Text(humidityResult, fontSize = 18.sp, modifier = Modifier.padding(top = 8.dp))
+
+        // Cache control + recent searches
+        OutlinedButton(
+            onClick = {
+                RetrofitClient.clearCache()
+                Toast.makeText(context, "Cache Cleared", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        ) {
+            Text("Clear Cache")
+        }
+
+        if (recentSearches.isNotEmpty()) {
+            Text("Recent Searches", fontSize =14.sp, modifier = Modifier.padding(top = 16.dp))
+            Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(top = 4.dp)) {
+                recentSearches.forEach { recentCity ->
+                    AssistChip(
+                        onClick = { city = recentCity },
+                        label = { Text(recentCity) },
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+            }
+        }
 
         HorizontalDivider(modifier = Modifier.padding(top = 24.dp, bottom = 16.dp))
 

@@ -19,7 +19,7 @@ object AppConstants{
     // NEW for Class 3: Paste your APIDog Cloud Mock base URL here
     // Example: "https://mock.apidog.com/m1/123456-0-default/"
     // IMPORTANT: must end with "/" -- Retrofit requires it
-    const val FEEDBACK_BASE_URL = "https://mock.apidog.com/m1/1407479-1417571-default/feedback"
+    const val FEEDBACK_BASE_URL = "https://mock.apidog.com/m1/1407479-1417571-default/"
 }
 
 
